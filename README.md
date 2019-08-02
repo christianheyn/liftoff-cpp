@@ -1,4 +1,4 @@
-# experimental interpreter - liftoff
+# experimental 🧪 interpreter - liftoff
 
 > currently learning C++ (functional C++)
 
