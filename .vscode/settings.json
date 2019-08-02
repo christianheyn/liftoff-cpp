@@ -1,5 +1,20 @@
 {
     "files.associations": {
-        "functional": "cpp"
-    }
+      "functional": "cpp",
+      "string": "cpp",
+      "ostream": "cpp",
+      "vector": "cpp",
+      "iosfwd": "cpp",
+      "iostream": "cpp"
+    },
+    "saveAndRun": {
+        "commands": [
+          {
+            "match": ".h",
+            "cmd": "./test.sh",
+            "useShortcut": false,
+            "silent": false
+          }
+        ]
+      }
 }
