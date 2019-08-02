@@ -1,9 +1,23 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <regex>
 
 using namespace std;
+
+const vector<string> operators = {
+    "+",
+    "-",
+    "*",
+    "/",
+    "?",
+    "."
+};
+
+auto isOperator(string str) -> bool {
+    return find(operators.begin(), operators.end(), str) != operators.end();
+};
 
 namespace tokenize {
 
@@ -13,17 +27,25 @@ namespace tokenize {
     };
 
     auto isVar (string input) -> bool {
+        if(isOperator(input)) return false;
+
         regex prefixRex;
-        prefixRex = "^([a-z|\?|$|*]+|-[a-zA-Z|\?|$|*|-])(.)*";
+        prefixRex = "^([a-z\?$*]+|-[a-zA-Z\?$*-])(.)*";
 
         regex allRex;
-        allRex = "[a-zA-Z0-9|\?|$|*|-]+";
+        allRex = "[a-zA-Z0-9\?$*-]+";
 
         return (regex_match(input, prefixRex) && regex_match(input, allRex));
     };
 
     auto isType (string input) -> bool {
-        return false;
+        regex prefixRex;
+        prefixRex = "^([A-Z]){1}(.)*";
+
+        regex allRex;
+        allRex = "[a-zA-Z0-9-_]{1,}";
+
+        return (regex_match(input, prefixRex) && regex_match(input, allRex));
     };
 
     auto isResolvedString (string input) -> bool {
@@ -46,24 +68,14 @@ namespace tokenize {
         return false;
     };
 
-    typedef function<bool(string)> TokenizeFunc;
+    typedef function<bool(string)> TokenCheckFunc;
 
-    vector<TokenizeFunc> tokenChecker = {
+    vector<TokenCheckFunc> tokenChecker = {
         isVar,
         isType,
         isResolvedString,
         isUnresolvedString
     };
-
-    // template <typename T>
-    // auto isEqual(T x, T y) -> bool {
-    //     if (x == y) {
-    //         return true;
-    //     }
-    //     throw invalid_argument( "wrong" );
-    // }
-
-   // auto tokenizeVariable(string[] tokens, string input) ->
 
     auto t() -> int {
         return 7;
