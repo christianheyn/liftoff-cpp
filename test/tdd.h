@@ -18,18 +18,18 @@ namespace tdd {
     }
 
     template <typename T>
-    auto isEqual(T expected, T actual) -> bool {
+    auto isEqual(T expected, T actual) -> void {
         if (expected == actual) {
-            return true;
+            return;
         }
         printError("⚖️  not equal", expected, actual);
         throw logic_error("");
     }
 
     template <typename T>
-    auto isNotEqual(T expected, T actual) -> bool {
+    auto isNotEqual(T expected, T actual) -> void {
         if (expected != actual) {
-            return true;
+            return;
         }
         printError("equal", expected, actual);
         throw logic_error("");
