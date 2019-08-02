@@ -1,44 +1,52 @@
 #include <iostream>
 #include <functional>
 #include <stdexcept>
-#include <string>
-#include <regex>
 
 using namespace std;
 
 namespace tdd {
-    typedef function<void()> Fn;
+    typedef function<void()> Func;
 
     template <typename T>
-    auto isEqual(T x, T y) -> bool {
-        if (x == y) {
-            return true;
-        }
-
-        throw invalid_argument( "wrong" );
-    }
-
-    template <typename T>
-    auto isNotEqual(T x, T y) -> bool {
-        if (x != y) {
-            return true;
-        }
-
-        throw invalid_argument( "wrong" );
-    }
-
-    auto describe(string msg, Fn lambda) {
-        cout << "\x1B[43m" << "\x1B[30m " << msg << " \x1B[0m" << endl;
-        lambda();
-    }
-
-    auto it(string msg, Fn lambda) {
+    auto printError(string errorMsg, T x, T y) -> void {
         try {
-            lambda();
-            cout << "    ✅ " << "\x1B[32m" << msg << "\x1B[0m" << endl;
-        } catch (const std::invalid_argument& e ) {
-            cout << "    ❌ " << "\x1B[31m" << msg << "\x1B[0m" << endl;
-            throw;
+            auto output = "";
+            cout << endl;
+            cout << "    " << errorMsg << " expected: `" << x << "`, actual `" << y << "`" << endl;
+
+        } catch (const logic_error& e) {}
+    }
+
+    template <typename T>
+    auto isEqual(T expected, T actual) -> bool {
+        if (expected == actual) {
+            return true;
+        }
+        printError("⚖️  not equal", expected, actual);
+        throw logic_error("");
+    }
+
+    template <typename T>
+    auto isNotEqual(T expected, T actual) -> bool {
+        if (expected != actual) {
+            return true;
+        }
+        printError("equal", expected, actual);
+        throw logic_error("");
+    }
+
+    auto describe(string msg, Func itFunction) {
+        cout << "\x1B[43m" << "\x1B[30m " << msg << " \x1B[0m" << endl;
+        itFunction();
+    }
+
+    auto it(string msg, Func itFunction) {
+        try {
+            itFunction();
+            cout << "    ✅  " << "\x1B[32m" << msg << "\x1B[0m" << endl;
+        } catch (const logic_error& e ) {
+            cout << "    ❌  " << "\x1B[31m" << msg << "\x1B[0m" << endl;
+            cout << endl;
         }
     }
 }
