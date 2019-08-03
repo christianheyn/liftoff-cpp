@@ -5,4 +5,6 @@ using namespace tdd;
 
 auto main () -> int {
     tokenizeTest();
+
+    summary();
 }

@@ -7,6 +7,9 @@ using namespace std;
 namespace tdd {
     typedef function<void()> Func;
 
+    int testsPassAmount = 0;
+    int testsFailAmount = 0;
+
     template <typename T>
     auto printError(string errorMsg, T x, T y) -> void {
         try {
@@ -44,9 +47,16 @@ namespace tdd {
         try {
             itFunction();
             cout << "    ✅  " << "\x1B[32m" << msg << "\x1B[0m" << endl;
+            testsPassAmount++;
         } catch (const logic_error& e ) {
             cout << "    ❌  " << "\x1B[31m" << msg << "\x1B[0m" << endl;
             cout << endl;
+            testsFailAmount++;
         }
     }
+
+    auto summary() -> void {
+        cout << testsPassAmount << " passed" << endl;
+        cout << testsFailAmount << " failed" << endl;
+    };
 }
