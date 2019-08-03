@@ -1,6 +1,6 @@
-# liftoff++
+# [wip] liftoff-cpp
 
-`liftoff++` is the c++ implementation for an experimental interpreter.
+`liftoff-cpp` is the C++ implementation for an experimental interpreter.
 
 (I'm currently learning functional  C++)
 
