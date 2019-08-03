@@ -244,4 +244,31 @@ auto tokenizeTest () -> void {
             isEqual(actual, expetced);
         });
     });
+
+    describe("tokenize::isWhitespace", [](){
+        it("returns false when input is empty string", [](){
+            auto actual = tokenize::isWhitespace("");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input contains non-whitespace", [](){
+            auto actual = tokenize::isWhitespace(" n");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input contains just whitespace", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isWhitespace("    ");
+            isEqual(actual, expetced);
+
+            actual = tokenize::isWhitespace(" \n");
+            isEqual(actual, expetced);
+
+            actual = tokenize::isWhitespace(" \n\t");
+            isEqual(actual, expetced);
+        });
+    });
 }

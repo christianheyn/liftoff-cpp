@@ -6,28 +6,43 @@
 
 using namespace std;
 
-const vector<string> operators = {
+typedef function<bool(string)> TokenCheckFunc;
+
+const vector<string> reservedOperator = {
     "+",
     "-",
     "*",
     "/",
     "?",
-    "."
+    ".",
+    "=",
+    "->",
+    "=>"
 };
 
-auto isOperator(string str) -> bool {
-    return find(operators.begin(), operators.end(), str) != operators.end();
+auto makeIsResolvedWrapper (string symbol) -> TokenCheckFunc {
+    return [](string input) {
+        return false;
+    };
+};
+
+auto makeIsUnresolvedWrapper (string symbol) -> TokenCheckFunc {
+    return [](string input) {
+        return false;
+    };
 };
 
 namespace tokenize {
 
-    struct tokenizeStep {
-        vector<string> tokens;
-        string input;
+    auto isReservedOperator(string str) -> bool {
+        return find(
+            reservedOperator.begin(),
+            reservedOperator.end(),
+            str) != reservedOperator.end();
     };
 
     auto isVar (string input) -> bool {
-        if(isOperator(input)) return false;
+        if (isReservedOperator(input)) return false;
 
         regex prefixRex;
         prefixRex = "^([a-z\?$*]+|-[a-zA-Z\?$*-])(.)*";
@@ -48,27 +63,20 @@ namespace tokenize {
         return (regex_match(input, prefixRex) && regex_match(input, allRex));
     };
 
-    auto isResolvedString (string input) -> bool {
-        return false;
-    };
-
-    auto isUnresolvedString (string input) -> bool {
-        return false;
-    };
-
-    auto isResolvedComment (string input) -> bool {
-        return false;
-    };
-
-    auto isUnresolvedComment (string input) -> bool {
-        return false;
-    };
-
     auto isWhitespace (string input) -> bool {
-        return false;
+        regex rex;
+        rex = "\\s{1,}";
+
+        return regex_match(input, rex);
     };
 
-    typedef function<bool(string)> TokenCheckFunc;
+    auto isResolvedString = makeIsResolvedWrapper("\"");
+
+    auto isUnresolvedString = makeIsUnresolvedWrapper("\"");
+
+    auto isResolvedComment = makeIsResolvedWrapper("#");
+
+    auto isUnresolvedComment = makeIsUnresolvedWrapper("\"");
 
     vector<TokenCheckFunc> tokenChecker = {
         isVar,
@@ -76,8 +84,4 @@ namespace tokenize {
         isResolvedString,
         isUnresolvedString
     };
-
-    auto t() -> int {
-        return 7;
-    }
 }
