@@ -1,27 +1,34 @@
 #include <iostream>
 #include <functional>
 #include <stdexcept>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
+
+const auto colorRed = "\x1B[31m";
+const auto colorGreen = "\x1B[32m";
+const auto colorBlue = "\033[0;34m";
+const auto colorNo = "\x1B[0m";
 
 namespace tdd {
     typedef function<void()> Func;
 
     int testsPassAmount = 0;
     int testsFailAmount = 0;
+    int testsTodoAmount = 0;
 
-    template <typename T>
-    auto printError(string errorMsg, T x, T y) -> void {
+    template <typename T, typename T2>
+    auto printError(string errorMsg, T x, T2 y) -> void {
         try {
             auto output = "";
             cout << endl;
-            cout << "    " << errorMsg << " expected: `" << x << "`, actual `" << y << "`" << endl;
-
+            // TODO: print vector
         } catch (const logic_error& e) {}
     }
 
-    template <typename T>
-    auto isEqual(T expected, T actual) -> void {
+    template <typename T, typename T2>
+    auto isEqual(T expected, T2 actual) -> void {
         if (expected == actual) {
             return;
         }
@@ -39,24 +46,30 @@ namespace tdd {
     }
 
     auto describe(string msg, Func itFunction) {
-        cout << "\x1B[43m" << "\x1B[30m " << msg << " \x1B[0m" << endl;
+        cout << "\x1B[43m" << "\x1B[30m " << msg << " " << colorNo << endl;
         itFunction();
     }
 
     auto it(string msg, Func itFunction) {
         try {
             itFunction();
-            cout << "    ✅  " << "\x1B[32m" << msg << "\x1B[0m" << endl;
+            cout  << colorGreen << "   PASS: " << msg << colorNo << endl;
             testsPassAmount++;
         } catch (const logic_error& e ) {
-            cout << "    ❌  " << "\x1B[31m" << msg << "\x1B[0m" << endl;
+            cout << colorRed << "   FAIL: " <<  msg << colorNo << endl;
             cout << endl;
             testsFailAmount++;
         }
     }
 
+    auto todo(string msg, Func itFunction) {
+        cout <<  colorBlue <<  "   TODO: " << msg << colorNo << endl;
+        testsTodoAmount++;
+    }
+
     auto summary() -> void {
-        cout << testsPassAmount << " passed" << endl;
-        cout << testsFailAmount << " failed" << endl;
+        cout << testsPassAmount << colorGreen << " passed" << colorNo << endl;
+        cout << testsFailAmount << colorRed << " failed" << colorNo << endl;
+        cout << testsTodoAmount << colorBlue << " todo" << colorNo << endl;
     };
 }

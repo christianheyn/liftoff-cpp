@@ -2,9 +2,12 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <optional>
 #include <regex>
+#include "./helper.h"
 
 using namespace std;
+using namespace helper;
 
 typedef function<bool(string)> TokenCheckFunc;
 
@@ -81,7 +84,57 @@ namespace tokenize {
     vector<TokenCheckFunc> tokenChecker = {
         isVar,
         isType,
-        isResolvedString,
-        isUnresolvedString
+        isWhitespace
+    };
+
+    struct Token {
+        string content;
+        int lineNumber;
+        int column;
+    };
+
+    inline bool operator==(const Token& t1, const Token& t2)
+    {
+        return (
+            t1.content == t2.content
+            && t1.lineNumber == t2.lineNumber
+            && t1.column == t2.column
+        );
+    }
+
+    auto _tokenizeInput (vector<Token> tokens, string input) -> vector<Token> {
+        if (input == "") {
+            return tokens;
+        }
+
+        auto inputHead = head(input);
+        auto inputTail = tail(input);
+
+        auto tokensHead = head(tokens);
+
+        if (isEmpty(tokens)) {
+            Token firstToken;
+            firstToken.content = inputHead.value();
+            firstToken.lineNumber = 1;
+            firstToken.column = 1;
+
+            tokens.push_back(firstToken);
+        }
+
+        if (isEmpty(inputTail)) {
+            return tokens;
+        }
+
+        return _tokenizeInput(tokens, inputTail.value());
+    };
+
+    auto tokenizeInput (string input) -> vector<Token> {
+        Token a;
+        a.content = "";
+        a.lineNumber = 1;
+        a.column = 1;
+
+        vector<Token> result = { a };
+        return result;
     };
 }

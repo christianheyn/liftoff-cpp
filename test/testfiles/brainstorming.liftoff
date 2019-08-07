@@ -1,0 +1,16 @@
+
+the type add is (Number Number) -> Number;
+function add is a, c to a + c catch 0.
+add = (a, c) -> (a + c) catch ( 0 ).
+
+function c is fn1 after fn2 after fn3.
+c = fn1 + fn2 + fn3.
+
+use 3 as z.
+define 4 as bbb.
+
+
+(2) add (3).
+e after before
+
+ void undefined none

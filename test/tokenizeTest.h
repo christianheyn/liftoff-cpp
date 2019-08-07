@@ -271,4 +271,18 @@ auto tokenizeTest () -> void {
             isEqual(actual, expetced);
         });
     });
+
+    describe("tokenize::tokenizeInput", [](){
+        it("returns empty vector", [](){
+            auto actual = tokenize::tokenizeInput("");
+
+            tokenize::Token a;
+            a.content = "";
+            a.lineNumber = 1;
+            a.column = 1;
+            vector<tokenize::Token> expetced = { a };
+
+            isEqual(actual, expetced);
+        });
+    });
 }
