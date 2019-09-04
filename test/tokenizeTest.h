@@ -114,8 +114,8 @@ auto tokenizeTest () -> void {
             isEqual(actual, expetced);
         });
 
-        it("returns false when input just '?'", [](){
-            auto expetced = false;
+        it("returns true when input just '?'", [](){
+            auto expetced = true;
 
             auto actual = tokenize::isVar("?");
             isEqual(actual, expetced);
@@ -197,10 +197,122 @@ auto tokenizeTest () -> void {
             isEqual(actual, expetced);
         });
 
-        it("returns false when input is just '*'", [](){
-            auto expetced = false;
+        it("returns true when input is just '*'", [](){
+            auto expetced = true;
 
             auto actual = tokenize::isVar("*");
+            isEqual(actual, expetced);
+        });
+    });
+
+    describe("tokenize::isUnresolvedDString", [](){
+        it("returns false when input is empty string", [](){
+            auto actual = tokenize::isUnresolvedDString("");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input is just quote", [](){
+            auto actual = tokenize::isUnresolvedDString("\"");
+            auto expetced = true;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input is two quote", [](){
+            auto actual = tokenize::isUnresolvedDString("\"\"");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input not includes starting quotes", [](){
+            auto actual = tokenize::isUnresolvedDString("no quotes");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input includes starting and ending quotes", [](){
+            auto actual = tokenize::isUnresolvedDString("\"no quotes\"");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input ending quote is backslashed", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isUnresolvedDString("\"no quotes\\\"");
+            isEqual(actual, expetced);
+
+            actual = tokenize::isUnresolvedDString("\"no quotes\\\\\\\"");
+            isEqual(actual, expetced);
+
+            // not backslashed
+            actual = tokenize::isUnresolvedDString("\"no quotes\\\\\"");
+            isEqual(actual, false);
+        });
+
+        it("returns true when input includes starting quotes", [](){
+            auto actual = tokenize::isUnresolvedDString("\"no quotes");
+            auto expetced = true;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input has newlines", [](){
+            auto actual = tokenize::isUnresolvedDString("\"no quotes\n\n");
+            auto expetced = true;
+            isEqual(actual, expetced);
+        });
+    });
+
+    describe("tokenize::isResolvedDString", [](){
+        it("returns false when input is empty string", [](){
+            auto actual = tokenize::isResolvedDString("");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input is just quote", [](){
+            auto actual = tokenize::isResolvedDString("\"");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input is two quote", [](){
+            auto actual = tokenize::isResolvedDString("\"\"");
+            auto expetced = true;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input not includes starting quotes", [](){
+            auto actual = tokenize::isResolvedDString("no quotes");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input includes starting and ending quotes", [](){
+            auto actual = tokenize::isResolvedDString("\"no quotes\"");
+            auto expetced = true;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input ending quote is not backslashed", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isResolvedDString("\"no quotes\\\\\"");
+            isEqual(actual, expetced);
+
+            // backslashed
+            actual = tokenize::isResolvedDString("\"no quotes\\\"");
+            isEqual(actual, false);
+        });
+
+        it("returns false when input includes starting quotes", [](){
+            auto actual = tokenize::isResolvedDString("\"no quotes");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+        it("returns true when input has newlines", [](){
+            auto actual = tokenize::isResolvedDString("\"quotes\n\nmultiline\"");
+            auto expetced = true;
             isEqual(actual, expetced);
         });
     });

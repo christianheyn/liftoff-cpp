@@ -68,8 +68,17 @@ namespace tdd {
     }
 
     auto summary() -> void {
+        cout << "========================" << endl;
         cout << testsPassAmount << colorGreen << " passed" << colorNo << endl;
-        cout << testsFailAmount << colorRed << " failed" << colorNo << endl;
-        cout << testsTodoAmount << colorBlue << " todo" << colorNo << endl;
+
+        if (testsFailAmount > 0) {
+            cout << testsFailAmount << colorRed << " failed" << colorNo << endl;
+        }
+
+        if (testsTodoAmount > 0) {
+            cout << testsTodoAmount << colorBlue << " todo" << colorNo << endl;
+        }
+
+        cout << "========================" << endl;
     };
 }

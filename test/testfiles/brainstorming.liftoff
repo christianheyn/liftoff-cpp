@@ -9,8 +9,12 @@ c = fn1 + fn2 + fn3.
 use 3 as z.
 define 4 as bbb.
 
-
 (2) add (3).
 e after before
 
  void undefined none
+function fn4 is (a) to (
+    return if a < 10
+            then recursive(a + 1)
+            else a.
+).

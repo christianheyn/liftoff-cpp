@@ -11,42 +11,51 @@ using namespace helper;
 
 typedef function<bool(string)> TokenCheckFunc;
 
-const vector<string> reservedOperator = {
-    "+",
-    "-",
-    "*",
-    "/",
-    "?",
-    ".",
-    "=",
-    "->",
-    "=>"
+auto lastIsBackslashed (string input) -> bool {
+    reverse(input.begin(), input.end());
+    auto noLast = input.substr(1, input.length());
+
+    std::smatch match;
+    std::regex e ("^(\\\\){1,}");
+
+    regex_search(noLast,match,e);
+
+    auto backshlashLength = match.length();
+
+    return ((backshlashLength % 2) == 1);
 };
 
-auto makeIsResolvedWrapper (string symbol) -> TokenCheckFunc {
-    return [](string input) {
-        return false;
+auto makeIsResolvedWrapper (char symbol) -> TokenCheckFunc {
+    return [symbol](string input) {
+        auto inputLength = input.length();
+
+        return (
+            inputLength >= 2
+            && input.at(0) == symbol
+            && input.at(inputLength - 1) == symbol
+            && !lastIsBackslashed(input)
+        );
     };
 };
 
-auto makeIsUnresolvedWrapper (string symbol) -> TokenCheckFunc {
-    return [](string input) {
-        return false;
+auto makeIsUnresolvedWrapper (char symbol) -> TokenCheckFunc {
+    return [symbol](string input) {
+        auto inputLength = input.length();
+
+        return (
+            inputLength >= 1
+            && input.at(0) == symbol
+            && (
+                (input.at(inputLength - 1) == symbol && lastIsBackslashed(input))
+                || (inputLength > 1 && input.at(inputLength - 1) != symbol)
+                || (inputLength == 1)
+            )
+        );
     };
 };
 
 namespace tokenize {
-
-    auto isReservedOperator(string str) -> bool {
-        return find(
-            reservedOperator.begin(),
-            reservedOperator.end(),
-            str) != reservedOperator.end();
-    };
-
     auto isVar (string input) -> bool {
-        if (isReservedOperator(input)) return false;
-
         regex prefixRex;
         prefixRex = "^([a-z\?$*]+|-[a-zA-Z\?$*-])(.)*";
 
@@ -73,13 +82,13 @@ namespace tokenize {
         return regex_match(input, rex);
     };
 
-    auto isResolvedString = makeIsResolvedWrapper("\"");
+    auto isResolvedDString = makeIsResolvedWrapper('"');
+    auto isUnresolvedDString = makeIsUnresolvedWrapper('"');
+    auto isResolvedSString = makeIsResolvedWrapper('\'');
+    auto isUnresolvedSString = makeIsUnresolvedWrapper('\'');
 
-    auto isUnresolvedString = makeIsUnresolvedWrapper("\"");
-
-    auto isResolvedComment = makeIsResolvedWrapper("#");
-
-    auto isUnresolvedComment = makeIsUnresolvedWrapper("\"");
+    auto isResolvedComment = makeIsResolvedWrapper('#');
+    auto isUnresolvedComment = makeIsUnresolvedWrapper('#');
 
     vector<TokenCheckFunc> tokenChecker = {
         isVar,
