@@ -1,9 +1,11 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <algorithm>
 #include <optional>
 #include <regex>
+#include <iostream>
 #include "./helper.h"
 
 using namespace std;
@@ -45,11 +47,7 @@ auto makeIsUnresolvedWrapper (char symbol) -> TokenCheckFunc {
         return (
             inputLength >= 1
             && input.at(0) == symbol
-            && (
-                (input.at(inputLength - 1) == symbol && lastIsBackslashed(input))
-                || (inputLength > 1 && input.at(inputLength - 1) != symbol)
-                || (inputLength == 1)
-            )
+            && (!makeIsResolvedWrapper(symbol)(input))
         );
     };
 };
@@ -86,14 +84,33 @@ namespace tokenize {
     auto isUnresolvedDString = makeIsUnresolvedWrapper('"');
     auto isResolvedSString = makeIsResolvedWrapper('\'');
     auto isUnresolvedSString = makeIsUnresolvedWrapper('\'');
-
     auto isResolvedComment = makeIsResolvedWrapper('#');
     auto isUnresolvedComment = makeIsUnresolvedWrapper('#');
 
     vector<TokenCheckFunc> tokenChecker = {
         isVar,
         isType,
-        isWhitespace
+        isWhitespace,
+        isResolvedDString,
+        isUnresolvedDString,
+        isResolvedSString,
+        isUnresolvedSString,
+        isResolvedComment,
+        isUnresolvedComment
+    };
+
+    auto isValidToken = [](string input) -> bool {
+        return (
+            isVar(input)
+            || isType(input)
+            || isWhitespace(input)
+            || isResolvedDString(input)
+            || isUnresolvedDString(input)
+            || isResolvedSString(input)
+            || isUnresolvedSString(input)
+            || isResolvedComment(input)
+            || isUnresolvedComment(input)
+        );
     };
 
     struct Token {
@@ -102,8 +119,7 @@ namespace tokenize {
         int column;
     };
 
-    inline bool operator==(const Token& t1, const Token& t2)
-    {
+    inline bool operator==(const Token& t1, const Token& t2) {
         return (
             t1.content == t2.content
             && t1.lineNumber == t2.lineNumber
@@ -119,7 +135,9 @@ namespace tokenize {
         auto inputHead = head(input);
         auto inputTail = tail(input);
 
-        auto tokensHead = head(tokens);
+        if (input == "") {
+            return tokens;
+        }
 
         if (isEmpty(tokens)) {
             Token firstToken;
@@ -128,6 +146,24 @@ namespace tokenize {
             firstToken.column = 1;
 
             tokens.push_back(firstToken);
+
+            return _tokenizeInput(tokens, inputTail.value());
+        }
+
+        auto tokenLastIndex = tokens.size() - 1;
+        auto lastToken = tokens.at(tokenLastIndex);
+
+        // if valid
+        auto concatedToken = lastToken.content + inputHead.value();
+        if (isValidToken(concatedToken)) {
+            tokens.at(tokenLastIndex).content = concatedToken;
+        } else {
+            Token nextToken;
+            nextToken.content = inputHead.value();
+            nextToken.lineNumber = 1;
+            nextToken.column = 1;
+
+            tokens.push_back(nextToken);
         }
 
         if (isEmpty(inputTail)) {
@@ -138,12 +174,17 @@ namespace tokenize {
     };
 
     auto tokenizeInput (string input) -> vector<Token> {
-        Token a;
-        a.content = "";
-        a.lineNumber = 1;
-        a.column = 1;
+        vector<Token> startTokenVector = {};
+        return _tokenizeInput(startTokenVector, input);
+    };
 
-        vector<Token> result = { a };
+    auto tokenVectorToStringVector (vector<Token> tokens) -> vector<string> {
+        vector<string> result = {};
+
+        for(auto const& token: tokens) {
+            result.push_back(token.content);
+        }
+
         return result;
     };
 }

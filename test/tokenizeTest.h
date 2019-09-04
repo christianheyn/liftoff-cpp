@@ -205,6 +205,8 @@ auto tokenizeTest () -> void {
         });
     });
 
+
+
     describe("tokenize::isUnresolvedDString", [](){
         it("returns false when input is empty string", [](){
             auto actual = tokenize::isUnresolvedDString("");
@@ -384,15 +386,36 @@ auto tokenizeTest () -> void {
         });
     });
 
+
     describe("tokenize::tokenizeInput", [](){
         it("returns empty vector", [](){
             auto actual = tokenize::tokenizeInput("");
+            vector<tokenize::Token> expetced = {};
+            isEqual(actual, expetced);
+        });
 
-            tokenize::Token a;
-            a.content = "";
-            a.lineNumber = 1;
-            a.column = 1;
-            vector<tokenize::Token> expetced = { a };
+        it("returns single token", [](){
+            auto input = "abcxyz";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "abcxyz",
+            };
+
+            isEqual(actual, expetced);
+        });
+
+        it("returns two tokens", [](){
+            auto input = "abc xyz";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "abc",
+                " ",
+                "xyz"
+            };
 
             isEqual(actual, expetced);
         });

@@ -46,6 +46,7 @@ namespace tdd {
     }
 
     auto describe(string msg, Func itFunction) {
+        cout << endl;
         cout << "\x1B[43m" << "\x1B[30m " << msg << " " << colorNo << endl;
         itFunction();
     }
