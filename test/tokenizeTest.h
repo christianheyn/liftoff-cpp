@@ -412,6 +412,33 @@ auto tokenizeTest () -> void {
         });
     });
 
+    describe("tokenize::isNumber", [](){
+        it("returns false when input is empty string", [](){
+            auto actual = tokenize::isNumber("");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns false when input contains non-digits", [](){
+            auto actual = tokenize::isNumber("-n");
+            auto expetced = false;
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input contains digits", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isNumber("-0.5");
+            isEqual(actual, expetced);
+
+            actual = tokenize::isNumber("9");
+            isEqual(actual, expetced);
+
+            actual = tokenize::isNumber("+0.98");
+            isEqual(actual, expetced);
+        });
+    });
+
 
     describe("tokenize::tokenizeInput", [](){
         it("returns empty vector", [](){

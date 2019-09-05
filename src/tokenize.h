@@ -65,6 +65,13 @@ namespace tokenize {
         return (regex_match(input, prefixRex) && regex_match(input, allRex));
     };
 
+    auto isNumber (string input) -> bool {
+        regex rex;
+        rex = "^(\\-|\\+){0,1}[0-9]+((\\.){0,1}[0-9]*)$";
+
+        return (regex_match(input, rex));
+    };
+
     auto isType (string input) -> bool {
         regex prefixRex;
         prefixRex = "^([A-Z]){1}(.)*";
@@ -94,6 +101,7 @@ namespace tokenize {
             isVar(input)
             || isType(input)
             || isWhitespace(input)
+            || isNumber(input)
             || isResolvedDString(input)
             || isUnresolvedDString(input)
             || isResolvedSString(input)
