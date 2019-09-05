@@ -43,11 +43,13 @@ auto makeIsResolvedWrapper (char symbol) -> TokenCheckFunc {
 auto makeIsUnresolvedWrapper (char symbol) -> TokenCheckFunc {
     return [symbol](string input) {
         auto inputLength = input.length();
+        auto inputInit = init(input);
 
         return (
             inputLength >= 1
             && input.at(0) == symbol
-            && (!makeIsResolvedWrapper(symbol)(input))
+            && !makeIsResolvedWrapper(symbol)(inputInit)
+            && !makeIsResolvedWrapper(symbol)(input)
         );
     };
 };
@@ -55,10 +57,10 @@ auto makeIsUnresolvedWrapper (char symbol) -> TokenCheckFunc {
 namespace tokenize {
     auto isVar (string input) -> bool {
         regex prefixRex;
-        prefixRex = "^([a-z\?$*]+|-[a-zA-Z\?$*-])(.)*";
+        prefixRex = "^([a-z?\\$*!_\\.<>\\|]|-[a-z?\\$*\\-!_\\.<>])+(.)*";
 
         regex allRex;
-        allRex = "[a-zA-Z0-9\?$*-]+";
+        allRex = "^[a-zA-Z0-9?\\$*\\-!_\\.<>\\|]+";
 
         return (regex_match(input, prefixRex) && regex_match(input, allRex));
     };
@@ -86,18 +88,6 @@ namespace tokenize {
     auto isUnresolvedSString = makeIsUnresolvedWrapper('\'');
     auto isResolvedComment = makeIsResolvedWrapper('#');
     auto isUnresolvedComment = makeIsUnresolvedWrapper('#');
-
-    vector<TokenCheckFunc> tokenChecker = {
-        isVar,
-        isType,
-        isWhitespace,
-        isResolvedDString,
-        isUnresolvedDString,
-        isResolvedSString,
-        isUnresolvedSString,
-        isResolvedComment,
-        isUnresolvedComment
-    };
 
     auto isValidToken = [](string input) -> bool {
         return (

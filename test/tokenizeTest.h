@@ -203,9 +203,35 @@ auto tokenizeTest () -> void {
             auto actual = tokenize::isVar("*");
             isEqual(actual, expetced);
         });
+
+        it("returns true when input is '-_-'", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isVar("-_-");
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input is '<-->'", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isVar("<-->");
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input is '<|>'", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isVar("<|>");
+            isEqual(actual, expetced);
+        });
+
+        it("returns true when input is '<html>'", [](){
+            auto expetced = true;
+
+            auto actual = tokenize::isVar("<html>");
+            isEqual(actual, expetced);
+        });
     });
-
-
 
     describe("tokenize::isUnresolvedDString", [](){
         it("returns false when input is empty string", [](){
@@ -395,26 +421,96 @@ auto tokenizeTest () -> void {
         });
 
         it("returns single token", [](){
-            auto input = "abcxyz";
+            auto input = "xyz.abc?_123*!";
             auto tokens = tokenize::tokenizeInput(input);
             auto actual = tokenize::tokenVectorToStringVector(tokens);
 
             vector<string> expetced = {
-                "abcxyz",
+                "xyz.abc?_123*!",
             };
 
             isEqual(actual, expetced);
         });
 
-        it("returns two tokens", [](){
-            auto input = "abc xyz";
+        it("returns multiple tokens", [](){
+            auto input = "TypeName xyz.abc?_123*!\n    ?isSome";
             auto tokens = tokenize::tokenizeInput(input);
             auto actual = tokenize::tokenVectorToStringVector(tokens);
 
             vector<string> expetced = {
-                "abc",
+                "TypeName",
                 " ",
-                "xyz"
+                "xyz.abc?_123*!",
+                "\n    ",
+                "?isSome"
+            };
+
+            isEqual(actual, expetced);
+        });
+
+        it("can handle double quote strings", [](){
+            auto input = "a = \"a string\"";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "a",
+                " ",
+                "=",
+                " ",
+                "\"a string\""
+            };
+
+            isEqual(actual, expetced);
+        });
+
+        it("can handle double quote strings with backslashed", [](){
+            auto input = "a = \"a \\\"string\" ;";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "a",
+                " ",
+                "=",
+                " ",
+                "\"a \\\"string\"",
+                " ",
+                ";"
+            };
+
+            isEqual(actual, expetced);
+        });
+
+        it("can handle single quote strings", [](){
+            auto input = "a = 'a string'";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "a",
+                " ",
+                "=",
+                " ",
+                "'a string'"
+            };
+
+            isEqual(actual, expetced);
+        });
+
+        it("can handle comments", [](){
+            auto input = "a = 1 # a string #";
+            auto tokens = tokenize::tokenizeInput(input);
+            auto actual = tokenize::tokenVectorToStringVector(tokens);
+
+            vector<string> expetced = {
+                "a",
+                " ",
+                "=",
+                " ",
+                "1",
+                " ",
+                "# a string #"
             };
 
             isEqual(actual, expetced);
